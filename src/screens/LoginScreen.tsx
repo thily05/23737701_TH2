@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { STUDENT, examStamp } from '@constants/student';
 import { theme } from '@constants/theme';
 import { Watermark } from '@components/Watermark';
@@ -14,7 +15,9 @@ export default function LoginScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
+            <StatusBar barStyle="dark-content" />
+
             <View style={styles.container}>
                 <Text style={styles.title}>KTXGO</Text>
                 <Text style={styles.subtitle}>Giao đồ tận phòng ký túc xá</Text>
@@ -27,6 +30,7 @@ export default function LoginScreen() {
                         onChangeText={setPhone}
                         placeholder={`Phone — ${STUDENT.mssv}`}
                         keyboardType="phone-pad"
+                        placeholderTextColor={theme.textLight}
                     />
                 </View>
 
@@ -36,20 +40,71 @@ export default function LoginScreen() {
 
                 <Text style={styles.hint}>Auth Stack · chưa có token</Text>
             </View>
+
             <Watermark />
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    safeArea: { flex: 1, backgroundColor: theme.background },
-    container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-    title: { fontSize: 36, fontWeight: '900', color: theme.primary, letterSpacing: 1 },
-    subtitle: { fontSize: 15, color: theme.textLight, marginTop: 4, marginBottom: 36 },
-    inputBox: { width: '100%', backgroundColor: theme.surface, borderRadius: 12, borderWidth: 1.5, borderColor: theme.border, padding: 14, marginBottom: 20 },
-    label: { fontSize: 12, color: theme.primary, fontWeight: '700', alignSelf: 'flex-end', marginBottom: 4 },
-    input: { fontSize: 16, color: theme.text, paddingVertical: 4 },
-    button: { width: '100%', backgroundColor: theme.primary, borderRadius: 12, paddingVertical: 16, alignItems: 'center', marginBottom: 16 },
-    buttonText: { color: theme.surface, fontSize: 17, fontWeight: '700' },
-    hint: { fontSize: 13, color: theme.textLight },
+    safeArea: {
+        flex: 1,
+        backgroundColor: theme.background,
+    },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    title: {
+        fontSize: 36,
+        fontWeight: '900',
+        color: theme.primary,
+        letterSpacing: 1,
+    },
+    subtitle: {
+        fontSize: 15,
+        color: theme.textLight,
+        marginTop: 4,
+        marginBottom: 36,
+    },
+    inputBox: {
+        width: '100%',
+        backgroundColor: theme.surface,
+        borderRadius: 12,
+        borderWidth: 1.5,
+        borderColor: theme.border,
+        padding: 14,
+        marginBottom: 20,
+    },
+    label: {
+        fontSize: 12,
+        color: theme.primary,
+        fontWeight: '700',
+        alignSelf: 'flex-end',
+        marginBottom: 4,
+    },
+    input: {
+        fontSize: 16,
+        color: theme.text,
+        paddingVertical: 4,
+    },
+    button: {
+        width: '100%',
+        backgroundColor: theme.primary,
+        borderRadius: 12,
+        paddingVertical: 16,
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    buttonText: {
+        color: theme.surface,
+        fontSize: 17,
+        fontWeight: '700',
+    },
+    hint: {
+        fontSize: 13,
+        color: theme.textLight,
+    },
 });

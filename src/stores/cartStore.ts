@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { STUDENT } from '@constants/student';
+import { STUDENT, PRICE_MULTIPLIER } from '@constants/student';
 
 export interface CartItem {
     id: number;
@@ -12,10 +12,14 @@ export interface CartItem {
 
 interface CartState {
     items: CartItem[];
-    addToCart: (item: { id: number; title: string; price: number }) => void;
-    updateQty: (id: number, qty: number) => void;
+    addToCart: (product: { id: number; title: string; price: number }) => void;
+    addItem: (product: { id: number; title: string; price: number }) => void;
     removeItem: (id: number) => void;
+    updateQty: (id: number, qty: number) => void;
+    changeQty: (id: number, qty: number) => void;
+    totalQuantity: () => number;
     getTotalQuantity: () => number;
+    totalAmount: () => number;
     getTotalAmount: () => number;
 }
 
@@ -24,6 +28,7 @@ export const useCartStore = create<CartState>()(
         (set, get) => ({
             items: [],
             addToCart: (product) => {
+                const calculatedPrice = Math.round(product.price);
                 const existing = get().items.find((i) => i.id === product.id);
                 if (existing) {
                     set({
@@ -33,11 +38,12 @@ export const useCartStore = create<CartState>()(
                     });
                 } else {
                     set({
-                        items: [...get().items, { id: product.id, title: product.title, price: product.price, qty: 1 }],
+                        items: [...get().items, { id: product.id, title: product.title, price: calculatedPrice, qty: 1 }],
                     });
                 }
             },
-            updateQty: (id, qty) => {
+            addItem: (product) => get().addToCart(product),
+            changeQty: (id, qty) => {
                 if (qty <= 0) {
                     get().removeItem(id);
                 } else {
@@ -46,11 +52,14 @@ export const useCartStore = create<CartState>()(
                     });
                 }
             },
+            updateQty: (id, qty) => get().changeQty(id, qty),
             removeItem: (id) => {
                 set({ items: get().items.filter((i) => i.id !== id) });
             },
-            getTotalQuantity: () => get().items.reduce((sum, item) => sum + item.qty, 0),
-            getTotalAmount: () => get().items.reduce((sum, item) => sum + item.price * item.qty, 0),
+            totalQuantity: () => (get().items || []).reduce((sum, item) => sum + item.qty, 0),
+            getTotalQuantity: () => get().totalQuantity(),
+            totalAmount: () => (get().items || []).reduce((sum, item) => sum + item.price * item.qty, 0),
+            getTotalAmount: () => get().totalAmount(),
         }),
         {
             name: `ktxgo-cart-${STUDENT.mssv}`,

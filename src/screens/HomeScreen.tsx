@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ActivityIndicator, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator, TouchableOpacity, StyleSheet, Vibration } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
-import * as Haptics from 'expo-haptics';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { ShopStackParamList } from '@navigation/ShopStack';
 import { fetchProducts, Product } from '@services/productApi';
@@ -19,37 +19,31 @@ interface Props {
 
 export default function HomeScreen({ navigation }: Props) {
     const [searchTerm, setSearchTerm] = useState('');
-    // Sử dụng giá trị debounce theo hằng số DEBOUNCE_MS của sinh viên
     const debouncedSearch = useDebouncedValue(searchTerm, DEBOUNCE_MS);
-    const addToCart = useCartStore((state) => state.addToCart);
+    const addItem = useCartStore((state) => state.addItem);
 
-    // TanStack Query gọi API
     const { data, isLoading, isError, refetch, isRefetching } = useQuery({
         queryKey: ['products'],
         queryFn: fetchProducts,
         staleTime: STALE_TIME_MS,
     });
 
-    // Lọc dữ liệu theo chuỗi đã debounce
     const filteredData = (data || []).filter((item) =>
         item.title.toLowerCase().includes(debouncedSearch.toLowerCase())
     );
 
     const handleAdd = (item: Product) => {
         try {
-            Haptics.selectionAsync(); // Hiệu ứng Haptic selection đúng số cuối 1
+            const Haptics = require('expo-haptics');
+            Haptics.selectionAsync?.();
         } catch {
-            // Bỏ qua nếu môi trường máy ảo chưa liên kết rung
+            Vibration.vibrate(40);
         }
-        addToCart({
-            id: item.id,
-            title: item.title,
-            price: Math.round(item.price * (15000 + (701 % 40) * 500)),
-        });
+        addItem(item);
     };
 
     return (
-        <SafeAreaView style={styles.safeArea}>
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
             {/* Header chuẩn KTXGO + (A) + ROOM_LABEL */}
             <View style={styles.header}>
                 <View style={styles.headerRow}>
