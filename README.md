@@ -1,4 +1,4 @@
-# Nguyễn Thị Lý _23737701_https://github.com/thily05/23737701_TH2.git
+# Nguyễn Thị Lý _23737701_https://github.com/thily05/23737701_TH2.git_Stamp: #EXAM_STAMP_Số cuối 1: Dưới | phone | Shop->Giỏ->Tôi | selection | B | card"
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started
