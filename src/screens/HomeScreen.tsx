@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, ActivityIndicator, TouchableOpacity, StyleSheet, Vibration } from 'react-native';
+import { View, Text, TextInput, ActivityIndicator, TouchableOpacity, StyleSheet, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery } from '@tanstack/react-query';
@@ -33,18 +33,13 @@ export default function HomeScreen({ navigation }: Props) {
     );
 
     const handleAdd = (item: Product) => {
-        try {
-            const Haptics = require('expo-haptics');
-            Haptics.selectionAsync?.();
-        } catch {
-            Vibration.vibrate(40);
-        }
         addItem(item);
     };
 
     return (
         <SafeAreaView style={styles.safeArea} edges={['top']}>
-            {/* Header chuẩn KTXGO + (A) + ROOM_LABEL */}
+            <StatusBar barStyle="light-content" />
+
             <View style={styles.header}>
                 <View style={styles.headerRow}>
                     <Text style={styles.headerTitle}>KTXGO</Text>
@@ -53,7 +48,6 @@ export default function HomeScreen({ navigation }: Props) {
                 <Text style={styles.headerSubtitle}>Giao tận {ROOM_LABEL}</Text>
             </View>
 
-            {/* Ô tìm kiếm controlled (B) */}
             <View style={styles.searchBox}>
                 <TextInput
                     style={styles.searchInput}
@@ -64,21 +58,17 @@ export default function HomeScreen({ navigation }: Props) {
                 />
             </View>
 
-            {/* Nhãn FlashList x2 (C) */}
             <View style={styles.subBar}>
                 <Text style={styles.subBarText}>(C) FlashList x2</Text>
             </View>
 
-            {/* Khu vực nội dung: Xử lý đủ 3 cảnh mạng */}
             <View style={styles.content}>
                 {isLoading ? (
-                    // Cảnh mạng 1: Đang tải
                     <View style={styles.center}>
                         <ActivityIndicator size="large" color={theme.primary} />
                         <Text style={styles.loadingText}>Đang tải món...</Text>
                     </View>
                 ) : isError ? (
-                    // Cảnh mạng 3: Lỗi mạng (Hiển thị MSSV đỏ + Thử lại)
                     <View style={styles.center}>
                         <Text style={styles.errorMssv}>{STUDENT.mssv}</Text>
                         <Text style={styles.errorText}>Không tải được dữ liệu món.</Text>
@@ -87,7 +77,6 @@ export default function HomeScreen({ navigation }: Props) {
                         </TouchableOpacity>
                     </View>
                 ) : (
-                    // Cảnh mạng 2: Có dữ liệu (Lưới FlashList 2 cột)
                     <FlashList
                         data={filteredData}
                         renderItem={({ item }) => (
@@ -105,7 +94,6 @@ export default function HomeScreen({ navigation }: Props) {
                 )}
             </View>
 
-            {/* Watermark cố định ở mép Dưới */}
             <Watermark />
         </SafeAreaView>
     );
@@ -114,12 +102,13 @@ export default function HomeScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: theme.background,
+        backgroundColor: theme.primary,
     },
     header: {
         backgroundColor: theme.primary,
         paddingHorizontal: 16,
-        paddingVertical: 14,
+        paddingBottom: 14,
+        paddingTop: 6,
     },
     headerRow: {
         flexDirection: 'row',
@@ -130,7 +119,6 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: '900',
         color: theme.surface,
-        letterSpacing: 0.5,
     },
     headerTag: {
         color: '#BFDBFE',
@@ -143,6 +131,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     searchBox: {
+        backgroundColor: theme.background,
         paddingHorizontal: 12,
         paddingTop: 10,
     },
@@ -157,6 +146,7 @@ const styles = StyleSheet.create({
         color: theme.text,
     },
     subBar: {
+        backgroundColor: theme.background,
         alignItems: 'flex-end',
         paddingHorizontal: 16,
         paddingVertical: 4,
@@ -168,6 +158,7 @@ const styles = StyleSheet.create({
     },
     content: {
         flex: 1,
+        backgroundColor: theme.background,
         paddingHorizontal: 6,
     },
     center: {

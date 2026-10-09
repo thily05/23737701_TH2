@@ -1,14 +1,20 @@
 import { create } from 'zustand';
-import { STUDENT } from '@constants/student';
+import { STUDENT, examStamp } from '@constants/student';
 
 interface AuthState {
     token: string | null;
-    login: (stamp: string) => void;
+    login: () => void;
     logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
     token: null,
-    login: (stamp: string) => set({ token: `ktxgo-${STUDENT.mssv}-${stamp}` }),
-    logout: () => set({ token: null }),
+    login: () => {
+        // Chuẩn đề: ktxgo-{mssv}-{stamp}
+        const token = `ktxgo-${STUDENT.mssv}-${examStamp()}`;
+        set({ token });
+    },
+    logout: () => {
+        set({ token: null });
+    },
 }));

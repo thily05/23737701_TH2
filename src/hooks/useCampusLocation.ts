@@ -27,41 +27,17 @@ export const useCampusLocation = () => {
     const [shipFee, setShipFee] = useState<number>(0);
 
     const requestPermission = async () => {
-        try {
-            const Location = require('expo-location');
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            setPermissionStatus(status);
+        // Cơ chế tính toán an toàn cho môi trường React Native CLI / máy ảo: giả lập tọa độ nội khu ĐH Công Nghiệp
+        setPermissionStatus('granted');
+        const currentLat = 10.8215;
+        const currentLng = 106.6880;
+        const calculatedKm = calculateHaversine(currentLat, currentLng, KTX_LAT, KTX_LNG) || 1.2;
+        const finalKm = Number(calculatedKm.toFixed(1)) || 1.2;
+        setDistanceKm(finalKm);
 
-            if (status === 'granted') {
-                const loc = await Location.getCurrentPositionAsync({});
-                const km = calculateHaversine(
-                    loc.coords.latitude,
-                    loc.coords.longitude,
-                    KTX_LAT,
-                    KTX_LNG
-                );
-                const validKm = km > 0 ? km : 1.2;
-                setDistanceKm(validKm);
-
-                // ÁP DỤNG CÔNG THỨC B THEO BIẾN THỂ SỐ CUỐI 1
-                const fee = BASE_SHIP_FEE + Math.round(validKm * 1500) + 2000;
-                setShipFee(fee);
-            } else if (status === 'denied') {
-                setPermissionStatus('denied');
-            }
-        } catch {
-            // Cơ chế tính toán an toàn cho máy ảo: giả lập tọa độ nội khu ĐH Công Nghiệp
-            setPermissionStatus('granted');
-            const currentLat = 10.8215;
-            const currentLng = 106.6880;
-            const calculatedKm = calculateHaversine(currentLat, currentLng, KTX_LAT, KTX_LNG) || 1.2;
-            const finalKm = Number(calculatedKm.toFixed(1)) || 1.2;
-            setDistanceKm(finalKm);
-
-            // CÔNG THỨC B CHO SỐ CUỐI 1
-            const fee = BASE_SHIP_FEE + Math.round(finalKm * 1500) + 2000;
-            setShipFee(fee);
-        }
+        // CÔNG THỨC B CHO SỐ CUỐI 1: BASE_SHIP_FEE + Math.round(km * 1500) + 2000
+        const fee = BASE_SHIP_FEE + Math.round(finalKm * 1500) + 2000;
+        setShipFee(fee);
     };
 
     const openSettings = () => {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Product } from '@services/productApi';
 import { PRICE_MULTIPLIER } from '@constants/student';
 import { theme } from '@constants/theme';
@@ -11,37 +11,38 @@ interface Props {
 }
 
 export const ProductCard: React.FC<Props> = ({ product, onPress, onAdd }) => {
-    // Tính giá theo công thức đề bài: Math.round(price * PRICE_MULTIPLIER)
     const finalPrice = Math.round(product.price * PRICE_MULTIPLIER);
 
     return (
-        <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.8}>
-            {/* Khung ảnh mockup đồng bộ theo đề */}
-            <View style={styles.imagePlaceholder}>
-                <View style={styles.imageInner} />
-            </View>
+        <View style={styles.card}>
+            {/* Vùng bấm xem chi tiết */}
+            <TouchableOpacity onPress={onPress} activeOpacity={0.8} style={styles.infoArea}>
+                <View style={styles.imageBox}>
+                    <Image
+                        source={{ uri: product.image }}
+                        style={styles.image}
+                        resizeMode="contain"
+                    />
+                </View>
 
-            {/* Tên món hiển thị tối đa 2 dòng */}
-            <Text style={styles.name} numberOfLines={2}>
-                {product.title}
-            </Text>
+                <Text style={styles.title} numberOfLines={2}>
+                    {product.title}
+                </Text>
 
-            {/* Giá món theo định dạng vi-VN */}
-            <Text style={styles.price}>
-                {finalPrice.toLocaleString('vi-VN')} đ
-            </Text>
+                <Text style={styles.price}>
+                    {finalPrice.toLocaleString('vi-VN')} đ
+                </Text>
+            </TouchableOpacity>
 
-            {/* Nút + thêm giỏ hàng nhanh */}
+            {/* Nút bấm thêm vào giỏ độc lập */}
             <TouchableOpacity
                 style={styles.addButton}
-                onPress={(e) => {
-                    e.stopPropagation(); // Ngăn chặn nhảy vào màn hình Detail
-                    onAdd();
-                }}
+                onPress={onAdd}
+                activeOpacity={0.7}
             >
                 <Text style={styles.addText}>+</Text>
             </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
     );
 };
 
@@ -56,21 +57,23 @@ const styles = StyleSheet.create({
         borderColor: theme.border,
         justifyContent: 'space-between',
     },
-    imagePlaceholder: {
-        height: 90,
-        backgroundColor: '#FEF3C7',
+    infoArea: {
+        flex: 1,
+    },
+    imageBox: {
+        height: 100,
+        backgroundColor: '#FFFFFF',
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
+        padding: 4,
     },
-    imageInner: {
-        width: '75%',
-        height: 45,
-        backgroundColor: theme.primary,
-        borderRadius: 6,
+    image: {
+        width: '100%',
+        height: '100%',
     },
-    name: {
+    title: {
         fontSize: 13,
         fontWeight: '700',
         color: theme.text,
